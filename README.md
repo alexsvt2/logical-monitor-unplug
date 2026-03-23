@@ -44,5 +44,9 @@ Para usarlo desde el Dock sin terminal:
 *   `bin/toggle_monitor.sh`: Control del toggle (lógica principal).
 *   `bin/reenable-displays.py`: Script avanzado de bajo nivel (CoreGraphics).
 
+## 📝 Notas Técnicas
+
+El componente `reenable-displays.py` es una pieza clave que utiliza la librería `CoreGraphics` de macOS a través de `ctypes`. Utiliza funciones como `CGSConfigureDisplayEnabled` (parte de las APIs privadas de Apple) para forzar la reactivación de monitores. Esta es una técnica avanzada para "despertar" pantallas que han quedado en un estado lógico de desconexión sin necesidad de manipular cables físicos.
+
 ---
 *Alexis Lopez - 2026*
