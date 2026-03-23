@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Script: reenable-displays.py
+# Author: @alex-konkov
+# Original source: https://github.com/jakehilborn/displayplacer/issues/137#issuecomment-1188372337
+# Description: Uses private CoreGraphics APIs to force-enable macOS displays.
 
 from ctypes import (CDLL, util, c_void_p, c_uint32, c_int, c_bool, POINTER, byref)
 
