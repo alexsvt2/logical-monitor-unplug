@@ -1,3 +1,5 @@
+[Español](RELEASE-v0.2.0.md) · [English](RELEASE-v0.2.0.en.md)
+
 # Logical Unplug v0.2.0
 
 Comparte un monitor entre tu Mac y otra computadora sin desconectar cables. Esta versión convierte el script original en una app nativa con controles gráficos.

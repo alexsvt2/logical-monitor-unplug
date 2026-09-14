@@ -1,3 +1,5 @@
+<p align="center"><strong>Español</strong> · <a href="README.en.md">English</a></p>
+
 <p align="center">
   <img src="assets/app-icon.png" width="112" alt="Icono de Logical Unplug">
 </p>
@@ -31,6 +33,8 @@ flowchart LR
 ```
 
 ## La app
+
+La interfaz de v0.2.0 está en español. Esta documentación también está disponible en [inglés](README.en.md).
 
 <p align="center">
   <img src="docs/images/app-screenshot.png" width="650" alt="Logical Unplug con un LG ULTRAGEAR seleccionado, su estado en el Mac y los botones Desactivar y Recuperar pantallas">
