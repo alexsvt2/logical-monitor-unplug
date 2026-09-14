@@ -34,7 +34,7 @@ flowchart LR
 
 ## The app
 
-The v0.2.0 interface is in Spanish. This guide includes the Spanish button labels so you can find them in the app.
+The interface supports **English and Spanish**. Use **Language / Idioma** to choose **English**, **Español**, or **Automatic (system)**. Changes apply immediately and are saved for the next launch.
 
 <p align="center">
   <img src="docs/images/app-screenshot.png" width="650" alt="Logical Unplug with an LG ULTRAGEAR selected, its status on the Mac, and buttons to disable it or recover displays">
@@ -47,11 +47,13 @@ The v0.2.0 interface is in Spanish. This guide includes the Spanish button label
 - **Manual recovery:** attempts to re-enable outputs that have disappeared from the list.
 - **Primary display protection:** prevents disabling the primary or built-in display.
 
+The screenshot above shows v0.2.0; v0.3.0 adds the language selector at the bottom of the window.
+
 ## Download and install
 
-Release **v0.2.0** includes an app for **Apple Silicon Macs (M1 or later)**. Its minimum deployment target is macOS 13; local checks were performed on an M4 Mac running macOS 26. It has not been validated on every OS version or monitor.
+Release **v0.3.0** includes an app for **Apple Silicon Macs (M1 or later)**. Its minimum deployment target is macOS 13; local checks were performed on an M4 Mac running macOS 26. It has not been validated on every OS version or monitor.
 
-1. Download `LogicalUnplug-v0.2.0-macOS-arm64.zip` from [Releases](https://github.com/alexsvt2/logical-monitor-unplug/releases/latest).
+1. Download `LogicalUnplug-v0.3.0-macOS-arm64.zip` from [Releases](https://github.com/alexsvt2/logical-monitor-unplug/releases/latest).
 2. Unzip it and drag `LogicalUnplug.app` into **Applications**.
 3. Open the app. You can also drag it to the Dock for quick access.
 
@@ -61,23 +63,25 @@ This release is signed locally (*ad hoc*), without a Developer ID certificate or
 
 ## How to use it
 
+On first launch, the app selects English or Spanish using the order of preferred languages in macOS, falling back to English if neither is supported. You can change this under **Language / Idioma** at the bottom of the window.
+
 1. Connect the monitor to your Mac and choose the display you want to share. If there is exactly one secondary external display, it is preselected.
-2. Click **Desactivar en este Mac** (Disable on this Mac) to stop sending it video.
-3. Click **Reactivar en este Mac** (Re-enable on this Mac) when you want to return.
+2. Click **Disable on this Mac** to stop sending it video.
+3. Click **Re-enable on this Mac** when you want to return.
 
 The app remembers your selection automatically. When you replace a monitor, select the new one from the list. The app does not silently replace a saved selection that has disappeared.
 
-**Activa en este Mac** (Active on this Mac) reflects the state reported by macOS, not the input physically shown on the monitor. Detecting a display does not automatically re-enable it, so it will not interrupt your use of the other computer.
+**Active on this Mac** reflects the state reported by macOS, not the input physically shown on the monitor. Detecting a display does not automatically re-enable it, so it will not interrupt your use of the other computer.
 
-Closing the window keeps the app in the menu bar. **Salir** (Quit) closes the app without changing the display state. Opening the app does not disable any displays by itself.
+Closing the window keeps the app in the menu bar. **Quit** closes the app without changing the display state. Opening the app does not disable any displays by itself.
 
 ## If your monitor is missing
 
-Click **Recuperar pantallas** (Recover displays). This is useful when, for example, an older version of the script disabled an output before the app had a chance to learn about that monitor.
+Click **Recover displays**. This is useful when, for example, an older version of the script disabled an output before the app had a chance to learn about that monitor.
 
 Recovery attempts to re-enable **all** compatible hidden outputs, not just your selection. If no additional displays appear, the app tells you instead of claiming success. Select the Mac's input in the monitor's menu and try again. If it still cannot be detected, reconnecting the cable may be necessary.
 
-If the disable button is unavailable, check whether that display is marked as primary. **Ajustes de pantallas…** (Display settings) opens macOS settings so you can change that assignment.
+If the disable button is unavailable, check whether that display is marked as primary. **Display settings…** opens macOS settings so you can change that assignment.
 
 ## Optional Terminal commands
 
@@ -90,9 +94,11 @@ bin/toggle_monitor.sh --enable    # Re-enable the selected display
 bin/toggle_monitor.sh --disable   # Disable the selected display
 bin/toggle_monitor.sh --recover   # Attempt to recover all hidden outputs
 bin/toggle_monitor.sh --help
+bin/toggle_monitor.sh --language en --list  # English for this invocation
+bin/toggle_monitor.sh --language es --help  # Help in Spanish
 ```
 
-You can also run the executable inside the app with these options. Toggle, enable, and disable commands accept a UUID obtained with `--list`. Errors return a nonzero exit code and a descriptive message. No code changes are required. CLI output is currently in Spanish.
+You can also run the executable inside the app with these options. Toggle, enable, and disable commands accept a UUID obtained with `--list`. Errors return a nonzero exit code and a descriptive message. No code changes are required. The CLI uses the language saved in the app. `--language en`, `--language es`, or `--language system` overrides it for that invocation only.
 
 ## Build and contribute
 
@@ -109,15 +115,20 @@ bash install.sh
 
 | File | Purpose |
 | --- | --- |
+| `Sources/Localization.swift` | Language selection, translations, and saved preference |
+| `Resources/en.lproj`, `Resources/es.lproj` | Interface strings, errors, and CLI help |
 | `Sources/MonitorCore.swift` | Display discovery, selection, recovery, and state verification |
 | `Sources/main.swift` | AppKit interface, menu bar controls, and CLI |
 | `Tests/main.swift` | Display selection and safeguards |
 | `assets/` | PNG icon, macOS icon, and generation details |
 | `bin/reenable-displays.py` | Historical helper; not used by the new app |
 
-Your selection is stored in `~/Library/Application Support/LogicalMonitorUnplug/selection.json`. The GUI and CLI share a lock to prevent concurrent changes.
+The language is stored in the app’s macOS preferences. Your monitor selection is stored in `~/Library/Application Support/LogicalMonitorUnplug/selection.json`. The GUI and CLI share a lock to prevent concurrent changes.
 
-Automated tests cover ambiguous selection, monitor replacement, and primary, built-in, single, and missing displays; they do not change real displays. Hardware testing consists of disabling the secondary monitor, checking its switch to the other computer, and re-enabling it. Repeat this for each monitor, cable, and macOS combination.
+Automated tests verify translations, message formats, automatic language selection, and saved preferences. They also cover ambiguous selection, monitor replacement, and primary, built-in, single, and missing displays; they do not change real displays. Hardware testing consists of disabling the secondary monitor, checking its switch to the other computer, and re-enabling it. Repeat this for each monitor, cable, and macOS combination.
+
+
+`bash test-ui.sh` opens a test window and verifies strings and control layout in both languages without changing display state or your language preference.
 
 ## Compatibility and credits
 

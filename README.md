@@ -34,7 +34,7 @@ flowchart LR
 
 ## La app
 
-La interfaz de v0.2.0 está en español. Esta documentación también está disponible en [inglés](README.en.md).
+La interfaz está disponible en **español e inglés**. En el selector **Idioma / Language** puedes elegir **Español**, **English** o **Automático (sistema)**. El cambio se aplica al instante y se guarda para la próxima apertura. Esta documentación también está disponible en [inglés](README.en.md).
 
 <p align="center">
   <img src="docs/images/app-screenshot.png" width="650" alt="Logical Unplug con un LG ULTRAGEAR seleccionado, su estado en el Mac y los botones Desactivar y Recuperar pantallas">
@@ -47,11 +47,13 @@ La interfaz de v0.2.0 está en español. Esta documentación también está disp
 - **Recuperación manual:** intenta reactivar las salidas que dejaron de aparecer.
 - **Protección de la principal:** impide desactivar la pantalla principal o la integrada.
 
+La captura anterior corresponde a v0.2.0; v0.3.0 añade el selector de idioma al pie de la ventana.
+
 ## Descargar e instalar
 
-La release **v0.2.0** incluye una app para **Mac con Apple Silicon (M1 o posterior)**. Su versión mínima de compilación es macOS 13; la comprobación local se realizó en un Mac M4 con macOS 26. No se ha validado en todas las versiones ni con todos los monitores.
+La release **v0.3.0** incluye una app para **Mac con Apple Silicon (M1 o posterior)**. Su versión mínima de compilación es macOS 13; la comprobación local se realizó en un Mac M4 con macOS 26. No se ha validado en todas las versiones ni con todos los monitores.
 
-1. Descarga `LogicalUnplug-v0.2.0-macOS-arm64.zip` desde [Releases](https://github.com/alexsvt2/logical-monitor-unplug/releases/latest).
+1. Descarga `LogicalUnplug-v0.3.0-macOS-arm64.zip` desde [Releases](https://github.com/alexsvt2/logical-monitor-unplug/releases/latest).
 2. Descomprime el archivo y arrastra `LogicalUnplug.app` a **Aplicaciones**.
 3. Abre la app. Puedes arrastrarla al Dock para tenerla a mano.
 
@@ -60,6 +62,8 @@ La release **v0.2.0** incluye una app para **Mac con Apple Silicon (M1 o posteri
 Esta release tiene firma local (*ad hoc*), sin certificado Developer ID ni notarización de Apple. Si macOS bloquea la primera apertura por no poder verificar al desarrollador, consulta [las instrucciones de Apple para abrir una app de un desarrollador desconocido](https://support.apple.com/en-ca/guide/mac-help/mh40616/mac). Esto puede requerir una autorización en **Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente**.
 
 ## Cómo se usa
+
+Al abrir por primera vez, la app utiliza español o inglés según el orden de idiomas preferidos de macOS; si ninguno está disponible, usa inglés. Puedes cambiarlo en **Idioma / Language**, al pie de la ventana.
 
 1. Conecta el monitor al Mac y elige la pantalla que quieres compartir en la lista. Si hay una sola pantalla externa secundaria, se preselecciona.
 2. Pulsa **Desactivar en este Mac** para dejar de enviarle video.
@@ -90,9 +94,11 @@ bin/toggle_monitor.sh --enable    # Reactiva la elegida
 bin/toggle_monitor.sh --disable   # Desactiva la elegida
 bin/toggle_monitor.sh --recover   # Intenta recuperar todas las salidas ocultas
 bin/toggle_monitor.sh --help
+bin/toggle_monitor.sh --language en --list  # Inglés solo en esta ejecución
+bin/toggle_monitor.sh --language es --help  # Ayuda en español
 ```
 
-También puedes invocar el ejecutable dentro de la app con esas opciones. Los comandos de alternar, activar y desactivar admiten un UUID obtenido con `--list`. Los errores devuelven un código distinto de cero y un mensaje descriptivo. No hace falta modificar el código.
+También puedes invocar el ejecutable dentro de la app con esas opciones. Los comandos de alternar, activar y desactivar admiten un UUID obtenido con `--list`. Los errores devuelven un código distinto de cero y un mensaje descriptivo. No hace falta modificar el código. La terminal usa la preferencia guardada en la app; `--language es`, `--language en` o `--language system` la cambia solo para esa ejecución.
 
 ## Compilar y contribuir
 
@@ -109,15 +115,20 @@ bash install.sh
 
 | Archivo | Responsabilidad |
 | --- | --- |
+| `Sources/Localization.swift` | Selección de idioma, traducciones y preferencia guardada |
+| `Resources/en.lproj`, `Resources/es.lproj` | Textos de interfaz, errores y ayuda CLI |
 | `Sources/MonitorCore.swift` | Detección, selección, recuperación y verificación de cambios |
 | `Sources/main.swift` | Interfaz AppKit, barra de menús y CLI |
 | `Tests/main.swift` | Selección y protección de pantallas |
 | `assets/` | Icono PNG, icono macOS y detalles de su generación |
 | `bin/reenable-displays.py` | Auxiliar histórico; no lo ejecuta la app nueva |
 
-La elección se guarda en `~/Library/Application Support/LogicalMonitorUnplug/selection.json`. La interfaz y la CLI comparten un bloqueo para evitar cambios simultáneos.
+El idioma se guarda en las preferencias de la app de macOS. La elección del monitor se guarda en `~/Library/Application Support/LogicalMonitorUnplug/selection.json`. La interfaz y la CLI comparten un bloqueo para evitar cambios simultáneos.
 
-Las pruebas automáticas cubren selección ambigua, sustitución de monitor, pantalla principal, integrada, única y no detectada; no cambian pantallas reales. La prueba de hardware consiste en desactivar la secundaria, comprobar el cambio a la otra computadora y reactivarla. Debe repetirse con cada combinación de monitor, cables y versión de macOS.
+Las pruebas automáticas verifican las traducciones, los formatos de mensajes, la selección automática de idioma y la preferencia guardada. También cubren selección ambigua, sustitución de monitor, pantalla principal, integrada, única y no detectada; no cambian pantallas reales. La prueba de hardware consiste en desactivar la secundaria, comprobar el cambio a la otra computadora y reactivarla. Debe repetirse con cada combinación de monitor, cables y versión de macOS.
+
+
+`bash test-ui.sh` abre una ventana de prueba y verifica los textos y la distribución de controles en ambos idiomas; no cambia el estado de las pantallas ni la preferencia de idioma.
 
 ## Compatibilidad y créditos
 
